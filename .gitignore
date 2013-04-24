@@ -1,0 +1,7 @@
+leapfrog_curses
+*.png
+*.js
+test_quadtree.nit
+test_quadtree
+.nit_compile
+leapfrog
