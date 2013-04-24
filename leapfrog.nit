@@ -116,8 +116,23 @@ class Duck
 	end
 end
 
+class FootBar 
+	super Sprite
+	
+	init
+	do
+		self.x = 0
+		self.y = 2000
+		self.width = 8000
+		self.height = 10
+	end
+
+end
+
 class PlayScene
 	super Scene
+
+	var bar = new FeetBar
 
 	var apples = new LiveGroup[Apple]
 	var duck = new Duck
@@ -130,6 +145,10 @@ class PlayScene
 
 	init
 	do
+		sprites.add(bar)
+		qd.insert(bar)
+
+
 		sprites.add(apples)
 		sprites.add(duck)
 		sprites.add(sheep)
@@ -150,6 +169,21 @@ class PlayScene
 		# UPDATE TOUTES LES POSITIONS DES OBJETS ==> CA DOIT MARCHER
 		updateQuadTree
 
+		var t = qd.retrieve(bar)
+		for i in t
+		do
+			if i isa Apple then
+				if not i.exists then continue
+				if i.overlaps(bar) or i.y > 2000 then
+					i.exists = false
+					qd.remove(i)
+				end
+			end
+		end
+
+
+
+
 		var spritesWithSheep = qd.retrieve(sheep)
 		for sp in spritesWithSheep
 		do
@@ -160,10 +194,10 @@ class PlayScene
 					sp.exists = false
 					qd.remove(sp)
 				end
-				if sp.y > 2000 and sp.exists then
-					sp.exists = false
-					qd.remove(sp)
-				end
+				#if sp.y > 2000 and sp.exists then
+					#	sp.exists = false
+					#qd.remove(sp)
+					#end
 			end
 
 			# Sheep vs duck
@@ -196,22 +230,22 @@ class PlayScene
 			qd.insert(a)
 		end
 		
-		for a in apples do
-			if not a.exists then 
-				qd.remove(a) 
-				continue
-			end
-			if a.y > 2000 then
-				a.exists = false
-				qd.remove(a)
-			end
-		end		
+		#for a in apples do
+			#	if not a.exists then 
+				#	qd.remove(a) 
+				#continue
+				#end
+				#if a.y > 2000 then
+					#a.exists = false
+					#qd.remove(a)
+					#end
+		#end		
 
 	end
 
 	fun updateQuadTree
 	do
-		qd.clear
+		#qd.clear
 		for a in apples do qd.updatePosition(a)
 		qd.updatePosition(sheep)
 		qd.updatePosition(duck)
