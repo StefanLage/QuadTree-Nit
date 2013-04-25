@@ -123,7 +123,7 @@ class FootBar
 	do
 		self.x = 0
 		self.y = 2000
-		self.width = 8000
+		self.width = 7000
 		self.height = 10
 	end
 
@@ -132,7 +132,7 @@ end
 class PlayScene
 	super Scene
 
-	var bar = new FeetBar
+	var bar = new FootBar
 
 	var apples = new LiveGroup[Apple]
 	var duck = new Duck
@@ -141,7 +141,7 @@ class PlayScene
 	var score = 0
 
 	var sprites = new LiveGroup[LiveObject]
-	var qd = new QuadTree.with(0, 0, 8000, 2000, 0, 3, "root")
+	var qd = new QuadTree.with(0, 0, 8000, 2000, 0, 3, "root", null)
 
 	init
 	do
@@ -169,17 +169,17 @@ class PlayScene
 		# UPDATE TOUTES LES POSITIONS DES OBJETS ==> CA DOIT MARCHER
 		updateQuadTree
 
-		var t = qd.retrieve(bar)
-		for i in t
-		do
-			if i isa Apple then
-				if not i.exists then continue
-				if i.overlaps(bar) or i.y > 2000 then
-					i.exists = false
-					qd.remove(i)
-				end
-			end
-		end
+		#var t = qd.retrieve(bar)
+		#for i in t
+		#do
+			#if i isa Apple then
+				#if not i.exists then continue
+				#if i.overlaps(bar) or i.y > 2000 then
+					#i.exists = false
+					#qd.remove(i)
+					#end
+					#end
+					#end
 
 
 
@@ -230,16 +230,16 @@ class PlayScene
 			qd.insert(a)
 		end
 		
-		#for a in apples do
-			#	if not a.exists then 
-				#	qd.remove(a) 
-				#continue
-				#end
-				#if a.y > 2000 then
-					#a.exists = false
-					#qd.remove(a)
-					#end
-		#end		
+		for a in apples do
+			if not a.exists then 
+				qd.remove(a) 
+				continue
+			end
+			if a.y > 2000 then
+				a.exists = false
+				qd.remove(a)
+			end
+		end		
 
 	end
 
