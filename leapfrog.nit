@@ -141,7 +141,7 @@ class PlayScene
 	var score = 0
 
 	var sprites = new LiveGroup[LiveObject]
-	var qd = new QuadTree.with(0, 0, 8000, 2000, 0, 3, "root", null)
+	var qd = new QuadTree.with(0, 0, 8000, 2000, 0, 3, "root")
 
 	init
 	do
@@ -166,23 +166,7 @@ class PlayScene
 		# Call update on all sprites
 		sprites.update
 
-		# UPDATE TOUTES LES POSITIONS DES OBJETS ==> CA DOIT MARCHER
 		updateQuadTree
-
-		#var t = qd.retrieve(bar)
-		#for i in t
-		#do
-			#if i isa Apple then
-				#if not i.exists then continue
-				#if i.overlaps(bar) or i.y > 2000 then
-					#i.exists = false
-					#qd.remove(i)
-					#end
-					#end
-					#end
-
-
-
 
 		var spritesWithSheep = qd.retrieve(sheep)
 		for sp in spritesWithSheep
@@ -194,10 +178,6 @@ class PlayScene
 					sp.exists = false
 					qd.remove(sp)
 				end
-				#if sp.y > 2000 and sp.exists then
-					#	sp.exists = false
-					#qd.remove(sp)
-					#end
 			end
 
 			# Sheep vs duck

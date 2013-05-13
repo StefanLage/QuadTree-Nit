@@ -151,7 +151,6 @@ class QuadTree
 	readable var _level: Int
 	readable var _maxLevel: Int
 	var objects: List[Sprite]
-	var parent: nullable QuadTree
 	var nw: nullable QuadTree
 	var ne: nullable QuadTree
 	var sw: nullable QuadTree
@@ -160,7 +159,7 @@ class QuadTree
 	var nodeType: String = ""
 	var digraph = ""
 
-	init with(x: Int, y: Int, width: Int, height: Int, level: Int, maxLevel: Int, nodeT: String, p: nullable QuadTree)
+	init with(x: Int, y: Int, width: Int, height: Int, level: Int, maxLevel: Int, nodeT: String)
 	do
 		# Check if the scene is respecting the normal size for a quadtree
 		if width % 2 > 0 or height % 2 > 0 then 
@@ -178,12 +177,11 @@ class QuadTree
 		nodeType = nodeT
 
 		if _level == _maxLevel then return
-		parent = p
 
-		nw = new QuadTree.with(_x, _y, _width / 2, _height / 2, _level+1, _maxLevel, "NW", self)
-		ne = new QuadTree.with(_x + _width / 2, _y, _width / 2, _height / 2, _level+1, _maxLevel, "NE", self)
-		sw = new QuadTree.with(_x, _y + _height / 2, _width / 2, _height / 2, _level+1, _maxLevel, "SW", self)
-		se = new QuadTree.with(_x + _width / 2, y + _height / 2, _width / 2, _height / 2, _level+1, _maxLevel, "SE", self)
+		nw = new QuadTree.with(_x, _y, _width / 2, _height / 2, _level+1, _maxLevel, "NW")
+		ne = new QuadTree.with(_x + _width / 2, _y, _width / 2, _height / 2, _level+1, _maxLevel, "NE")
+		sw = new QuadTree.with(_x, _y + _height / 2, _width / 2, _height / 2, _level+1, _maxLevel, "SW")
+		se = new QuadTree.with(_x + _width / 2, y + _height / 2, _width / 2, _height / 2, _level+1, _maxLevel, "SE")
 	end
 	
 	# Insert a LiveObject in the right QuadTree based on its coordinates
@@ -225,18 +223,9 @@ class QuadTree
 	do
 		# Get QuadTree where is localised 'sp'
 		var quad = findNode(sp)
-		
-		#if quad == self then return quad.as(not null)
-			
-
 		for i in [0..maxLevel]
 		do
-			#if quad.nw.width < sp.width then break
-			#if quad == quad.findNode(sp) then break
-			if quad != null then 
-				if quad.nw.width < sp.width then break
-				quad = quad.findNode(sp)
-			end
+			if quad != null then quad = quad.findNode(sp)
 			if quad.level == maxLevel then break
 		end
 		return quad.as(not null)
@@ -250,10 +239,6 @@ class QuadTree
 		var left = (sp.x > _x+subWidth)
 		var top = (sp.y > _y+subHeight)
 
-		#if sp.width > subWidth and parent != null then
-			#return parent
-			#end
-
 		if left then
 			if not top then node = sw
 		else
@@ -263,14 +248,7 @@ class QuadTree
 				node = se
 			end
 		end
-
 		
-		if sp.width > subWidth and parent != null then
-			return parent
-		end
-		# If width or height is bigger than node size
-		#if sp.width > node.width or sp.height > node.height then return self
-
 		return node
 	end
 
@@ -285,13 +263,11 @@ class QuadTree
 				if i != sp then list.add(i)
 			end
 		end
-		#if index != parent then
 		if index.level < maxLevel then
-			if index.nw != null then # and index.nw.width > sp.width then
+			if index.nw != null then
 				list = index.retrieve(sp)
 			end
 		end
-		#end
 		return list
 	end
 end
