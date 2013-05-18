@@ -18,6 +18,7 @@
 module leapfrog
 
 import scene2d
+import quadtree
 
 # A falling apple
 # If the sheep grab it, it scores one point.
@@ -133,31 +134,24 @@ class PlayScene
 	super Scene
 
 	var bar = new FootBar
-
 	var apples = new LiveGroup[Apple]
 	var duck = new Duck
 	var sheep = new Sheep
-
 	var score = 0
-
 	var sprites = new LiveGroup[LiveObject]
-	var qd = new QuadTree.with(0, 0, 8000, 2000, 0, 3, "root")
+	var qd = new Quadtree[Sprite].with(0, 0, 8000, 2000, 0, 3, null)
 
 	init
 	do
+		qd.nw
 		sprites.add(bar)
-		qd.insert(bar)
-
-
+		qd.addItem(bar)
 		sprites.add(apples)
 		sprites.add(duck)
 		sprites.add(sheep)
-
-		for a in apples do
-			qd.insert(a)
-		end
-		qd.insert(duck)
-		qd.insert(sheep)
+		for a in apples do qd.addItem(a)
+		qd.addItem(duck)
+		qd.addItem(sheep)
 	end
 
 	redef fun update
@@ -165,7 +159,6 @@ class PlayScene
 
 		# Call update on all sprites
 		sprites.update
-
 		updateQuadTree
 
 		var spritesWithSheep = qd.retrieve(sheep)
@@ -207,7 +200,7 @@ class PlayScene
 			a.vx = 0
 			a.vy = 70.rand + 30
 			apples.add(a)
-			qd.insert(a)
+			qd.addItem(a)
 		end
 		
 		for a in apples do
@@ -225,7 +218,7 @@ class PlayScene
 
 	fun updateQuadTree
 	do
-		#qd.clear
+		qd.clear
 		for a in apples do qd.updatePosition(a)
 		qd.updatePosition(sheep)
 		qd.updatePosition(duck)
